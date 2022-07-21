@@ -1,0 +1,42 @@
+version: '2.4'
+services:
+  chimei_api:
+    image: chimei_api_flask
+    container_name: chimei_api
+    runtime: nvidia
+    shm_size: "16gb"
+    restart: always
+    #network_mode: "host"
+    networks:
+      ithelp_application:
+        ipv4_address: 172.28.0.2
+    volumes:
+      - /home/oaif/projects/chimei_demo/api/app:/workspace/chimei
+    ports:
+      - 15002:15002
+  chimei_frontend:
+    image: chimei_frontend
+    container_name: chimei_frontend
+    stdin_open: true
+    tty: true
+    restart: always
+    #network_mode: "host"
+    networks:
+      ithelp_application:
+        ipv4_address: 172.28.0.3
+    volumes:
+      - /home/oaif/projects/chimei_demo/frontend/nginx/logs:/var/log/nginx
+      - /home/oaif/projects/chimei_demo/frontend/nginx/etc:/etc/nginx
+      - /home/oaif/projects/chimei_demo/frontend/www:/var/www
+    ports:
+      - "80:80"
+      - "443:443"
+
+networks:
+  ithelp_application:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.28.0.0/16
+          gateway: 172.28.0.1
